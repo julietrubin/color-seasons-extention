@@ -1,28 +1,29 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 type Season = "summer" | "autumn" | "spring" | "winter" | "off";
 
+const seasonColors: { [key in Season]: string[] } = {
+  summer: ["#f0e68c", "#f1f68b", "#f3f7a1"],
+  autumn: ["#f4a300", "#c75c00", "#d26c00"],
+  spring: ["#98fb98", "#77cc77", "#9fda8b"],
+  winter: ["#add8e6", "#6f9fd8", "#5a92c2"],
+  off: [],
+};
+
 const ColorSeasonSelector = () => {
-  // State to store the selected season
   const [selectedSeason, setSelectedSeason] = useState<Season>("off");
   const [showColors, setShowColors] = useState(false);
 
-  // Function to handle button click for season selection
   const handleSeasonClick = (season: Season) => {
-    if (season === selectedSeason) {
-      setSelectedSeason("off");
-      document.body.style.backgroundColor = ""; // Reset the background
-    } else {
-      setSelectedSeason(season);
-      chrome.storage.sync.set({ season: season }, () => {
-        console.log(`Selected color season: ${season}`);
-      });
-      updateColorSeason(season);
-    }
-    setShowColors(false); // Hide colors if clicked again
+    season = season === selectedSeason ? "off" : season;
+    setSelectedSeason(season);
+    chrome.storage.sync.set({ season: season }, () => {
+      console.log(`Selected color season: ${season}`);
+    });
+    updateColorSeason(season);
+    setShowColors(false);
   };
 
-  // Function to update the background color based on the selected season
   const updateColorSeason = (season: Season) => {
     switch (season) {
       case "summer":
@@ -35,14 +36,13 @@ const ColorSeasonSelector = () => {
         document.body.style.backgroundColor = "#98fb98"; // Light green for spring
         break;
       case "winter":
-        document.body.style.backgroundColor = "#add8e6"; // Light blue for winter
+        document.body.style.backgroundColor = "#0524ff"; // Light blue for winter
         break;
       default:
         break;
     }
   };
 
-  // Load the saved season from Chrome storage when the component mounts
   useEffect(() => {
     chrome.storage.sync.get("season", (data) => {
       if (data.season) {
@@ -52,28 +52,41 @@ const ColorSeasonSelector = () => {
     });
   }, []);
 
-  // Define the colors for each season
-  const seasonColors: { [key in Season]: string[] } = {
-    summer: ["#f0e68c", "#f1f68b", "#f3f7a1"],
-    autumn: ["#f4a300", "#c75c00", "#d26c00"],
-    spring: ["#98fb98", "#77cc77", "#9fda8b"],
-    winter: ["#add8e6", "#6f9fd8", "#5a92c2"],
-    off: [],
-  };
+  useEffect(() => {
+    if (selectedSeason == "off") {
+      document.body.style.backgroundColor = "";
+    }
+  }, [selectedSeason]);
 
-  // Toggle the display of colors for the selected season
   const handleToggleColors = () => {
     setShowColors(!showColors);
   };
 
   return (
     <div className="p-6 min-w-[24rem]">
-      <label
-        htmlFor="season-selector"
-        className="block text-xl font-semibold mb-4"
-      >
-        Select Color Season:
-      </label>
+      {selectedSeason !== "off" && (
+        <div className="text-right pb-4">
+          <button
+            onClick={handleToggleColors}
+            className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all mb-4"
+          >
+            {showColors ? "Hide Colors" : "Show Colors"}
+          </button>
+          {showColors && (
+            <div className="grid grid-cols-3 gap-4">
+              {seasonColors[selectedSeason].map((color, index) => (
+                <div
+                  key={index}
+                  className="w-full h-16 rounded-md flex items-center justify-center text-white font-bold"
+                  style={{ backgroundColor: color }}
+                >
+                  {color}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
       <div className="flex gap-4 mb-4">
         <button
           onClick={() => handleSeasonClick("summer")}
@@ -116,30 +129,6 @@ const ColorSeasonSelector = () => {
           Off
         </button>
       </div>
-
-      {selectedSeason !== "off" && (
-        <div>
-          <button
-            onClick={handleToggleColors}
-            className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all mb-4"
-          >
-            {showColors ? "Hide Colors" : "Show Colors"}
-          </button>
-          {showColors && (
-            <div className="grid grid-cols-3 gap-4">
-              {seasonColors[selectedSeason].map((color, index) => (
-                <div
-                  key={index}
-                  className="w-full h-16 rounded-md flex items-center justify-center text-white font-bold"
-                  style={{ backgroundColor: color }}
-                >
-                  {color}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 };
