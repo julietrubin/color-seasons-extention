@@ -2,12 +2,39 @@ import { useState, useEffect } from "react";
 
 type Season = "summer" | "autumn" | "spring" | "winter" | "off";
 
-const seasonColors: { [key in Season]: string[] } = {
-  summer: ["#f0e68c", "#f1f68b", "#f3f7a1"],
-  autumn: ["#f4a300", "#c75c00", "#d26c00"],
-  spring: ["#98fb98", "#77cc77", "#9fda8b"],
-  winter: ["#add8e6", "#6f9fd8", "#5a92c2"],
-  off: [],
+// Updated seasonColors to include background color, colors, and button styles
+const seasonColors: {
+  [key in Season]: {
+    backgroundColor: string;
+    colors: string[];
+    button: { active: string; inactive: string };
+  };
+} = {
+  summer: {
+    backgroundColor: "#f0e68c", // Light yellow for summer
+    colors: ["#f1f68b", "#f3f7a1"], // Additional colors for summer
+    button: { active: "bg-yellow-300", inactive: "bg-gray-200" }, // Button colors
+  },
+  autumn: {
+    backgroundColor: "#f4a300", // Autumn orange
+    colors: ["#c75c00", "#d26c00"], // Additional colors for autumn
+    button: { active: "bg-orange-500", inactive: "bg-gray-200" }, // Button colors
+  },
+  spring: {
+    backgroundColor: "#98fb98", // Light green for spring
+    colors: ["#77cc77", "#9fda8b"], // Additional colors for spring
+    button: { active: "bg-green-300", inactive: "bg-gray-200" }, // Button colors
+  },
+  winter: {
+    backgroundColor: "#0524ff", // Light blue for winter
+    colors: ["#6f9fd8", "#5a92c2"], // Additional colors for winter
+    button: { active: "bg-blue-300", inactive: "bg-gray-200" }, // Button colors
+  },
+  off: {
+    backgroundColor: "",
+    colors: [],
+    button: { active: "bg-gray-400", inactive: "bg-gray-200" }, // Button colors
+  },
 };
 
 const ColorSeasonSelector = () => {
@@ -25,21 +52,9 @@ const ColorSeasonSelector = () => {
   };
 
   const updateColorSeason = (season: Season) => {
-    switch (season) {
-      case "summer":
-        document.body.style.backgroundColor = "#f0e68c"; // Light yellow for summer
-        break;
-      case "autumn":
-        document.body.style.backgroundColor = "#f4a300"; // Autumn orange
-        break;
-      case "spring":
-        document.body.style.backgroundColor = "#98fb98"; // Light green for spring
-        break;
-      case "winter":
-        document.body.style.backgroundColor = "#0524ff"; // Light blue for winter
-        break;
-      default:
-        break;
+    const seasonData = seasonColors[season];
+    if (seasonData.backgroundColor) {
+      document.body.style.backgroundColor = seasonData.backgroundColor; // Set the background color
     }
   };
 
@@ -53,7 +68,7 @@ const ColorSeasonSelector = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedSeason == "off") {
+    if (selectedSeason === "off") {
       document.body.style.backgroundColor = "";
     }
   }, [selectedSeason]);
@@ -74,7 +89,7 @@ const ColorSeasonSelector = () => {
           </button>
           {showColors && (
             <div className="grid grid-cols-3 gap-4">
-              {seasonColors[selectedSeason].map((color, index) => (
+              {seasonColors[selectedSeason].colors.map((color, index) => (
                 <div
                   key={index}
                   className="w-full h-16 rounded-md flex items-center justify-center text-white font-bold"
@@ -91,7 +106,9 @@ const ColorSeasonSelector = () => {
         <button
           onClick={() => handleSeasonClick("summer")}
           className={`py-2 px-4 rounded-md transition-all ${
-            selectedSeason === "summer" ? "bg-yellow-300" : "bg-gray-200"
+            selectedSeason === "summer"
+              ? seasonColors.summer.button.active
+              : seasonColors.summer.button.inactive
           }`}
         >
           Summer
@@ -99,7 +116,9 @@ const ColorSeasonSelector = () => {
         <button
           onClick={() => handleSeasonClick("autumn")}
           className={`py-2 px-4 rounded-md transition-all ${
-            selectedSeason === "autumn" ? "bg-orange-500" : "bg-gray-200"
+            selectedSeason === "autumn"
+              ? seasonColors.autumn.button.active
+              : seasonColors.autumn.button.inactive
           }`}
         >
           Autumn
@@ -107,7 +126,9 @@ const ColorSeasonSelector = () => {
         <button
           onClick={() => handleSeasonClick("spring")}
           className={`py-2 px-4 rounded-md transition-all ${
-            selectedSeason === "spring" ? "bg-green-300" : "bg-gray-200"
+            selectedSeason === "spring"
+              ? seasonColors.spring.button.active
+              : seasonColors.spring.button.inactive
           }`}
         >
           Spring
@@ -115,7 +136,9 @@ const ColorSeasonSelector = () => {
         <button
           onClick={() => handleSeasonClick("winter")}
           className={`py-2 px-4 rounded-md transition-all ${
-            selectedSeason === "winter" ? "bg-blue-300" : "bg-gray-200"
+            selectedSeason === "winter"
+              ? seasonColors.winter.button.active
+              : seasonColors.winter.button.inactive
           }`}
         >
           Winter
@@ -123,7 +146,9 @@ const ColorSeasonSelector = () => {
         <button
           onClick={() => handleSeasonClick("off")}
           className={`py-2 px-4 rounded-md transition-all ${
-            selectedSeason === "off" ? "bg-gray-400" : "bg-gray-200"
+            selectedSeason === "off"
+              ? seasonColors.off.button.active
+              : seasonColors.off.button.inactive
           }`}
         >
           Off
