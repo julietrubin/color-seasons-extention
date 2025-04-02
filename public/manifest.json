@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Chrome Extension Starter",
-  "description": "Chrome extension starter template with React, TypeScript, Vite and Tailwind",
+  "name": "Color Season Extension",
+  "description": "Greys out products that don't match selected season",
   "icons": {
     "16": "icon.png",
     "48": "icon.png",
@@ -18,7 +18,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["https://www.thredup.com/*"],
       "js": ["content_script.js"]
     }
   ],
@@ -27,5 +27,5 @@
     "service_worker": "service_worker.js"
   },
   "permissions": ["storage", "tabs", "tabGroups"],
-  "host_permissions": ["<all_urls>"]
+  "host_permissions": ["https://www.thredup.com/*"]
 }
